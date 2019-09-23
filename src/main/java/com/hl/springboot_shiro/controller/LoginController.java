@@ -30,7 +30,7 @@ public class LoginController {
         Subject subject = SecurityUtils.getSubject();
         subject.login(new UsernamePasswordToken(username, password));
 
-        return user.getUsername() + "-" + user.getPassword();
+        return "登录成功";
     }
 
     @PostMapping("/unLogin")
@@ -40,6 +40,7 @@ public class LoginController {
 
     @PostMapping("/info")
     public String info() {
-        return "info";
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        return user.getUsername();
     }
 }
