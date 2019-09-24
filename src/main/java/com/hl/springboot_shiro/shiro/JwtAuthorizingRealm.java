@@ -32,7 +32,7 @@ public class JwtAuthorizingRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        System.out.println("权限配置-->MyShiroRealm.doGetAuthorizationInfo()");
+        System.out.println("用户权限配置-->JwtAuthorizingRealm.doGetAuthorizationInfo()");
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         User user = (User) principals.getPrimaryPrincipal();
 
@@ -45,25 +45,12 @@ public class JwtAuthorizingRealm extends AuthorizingRealm {
         return authorizationInfo;
     }
 
-    /**
-     * 校验 验证token逻辑
-     */
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         System.out.println("JwtAuthorizingRealm.doGetAuthenticationInfo()");
-        String username = (String) token.getPrincipal();
-        String password = new String((char[]) token.getCredentials());
-
-        //通过username从数据库中查找 User对象，如果找到，没找到.
-        //实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
+        UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) authenticationToken;
+        String username = usernamePasswordToken.getUsername();
         User user = userRepository.findByUsername(username);
-        if (user == null) {
-            return null;
-        }
-        return new SimpleAuthenticationInfo(
-                user, // 用户实体
-                user.getPassword(), //密码
-                getName()  //realm name
-        );
+        return new SimpleAuthenticationInfo(user, username, getName());
     }
 }

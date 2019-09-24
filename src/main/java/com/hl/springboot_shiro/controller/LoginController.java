@@ -27,8 +27,7 @@ public class LoginController {
             return "用户名或密码错误";
         }
 
-        Subject subject = SecurityUtils.getSubject();
-        subject.login(new UsernamePasswordToken(username, password));
+        SecurityUtils.getSubject().login(new UsernamePasswordToken(username, password));
 
         return "登录成功";
     }
